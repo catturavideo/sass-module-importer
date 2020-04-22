@@ -63,9 +63,9 @@ class ModuleImporter {
       if (resolved) {
         resolve({ url, prev, resolved });
       } else {
-        const options = Object.assign({}, this.options, {
+        const options = Object.assign({
           basedir: prev && prev !== 'stdin' ? path.dirname(prev) : process.cwd(),
-        });
+        }, this.options);
         resolver(url, options, (err, res) => {
           resolve({ url: (err ? url : res), prev, resolved: !err });
         });

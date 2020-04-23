@@ -24,12 +24,14 @@ class ModuleImporter {
       return Promise.resolve(this.aliases.get(fullPath));
     }
 
-    const dirName = path.dirname(fullPath);
-    const fileName = `?(_)${path.basename(fullPath)}.+(scss|sass|css)`;
-    const matches = glob.sync(path.join(dirName, fileName));
+    if (this.options.basedir) {
+      const dirName = path.dirname(fullPath);
+      const fileName = `?(_)${path.basename(fullPath)}.+(scss|sass|css)`;
+      const matches = glob.sync(path.join(dirName, fileName));
 
-    if (matches.length > 0) {
-      return Promise.resolve({ file: fullPath });
+      if (matches.length > 0) {
+        return Promise.resolve({ file: fullPath });
+      }
     }
 
     return Promise.resolve({ url, prev })

@@ -13,7 +13,7 @@ function getCSS(file, data) {
       outputStyle: 'compressed',
       includePaths: [path.join(__dirname, 'fixtures')],
       importer: moduleImporter({
-        basedir: path.join(__dirname, 'fixtures'),
+      //  basedir: path.join(__dirname, 'fixtures'),
       }),
     }, (err, res) => {
       if (err) {
@@ -25,6 +25,7 @@ function getCSS(file, data) {
   });
 }
 
+process.chdir(path.join(__dirname, 'fixtures'));
 
 describe('sass-module-importer', () => {
   it('should import a local file', (done) => {
@@ -46,7 +47,7 @@ describe('sass-module-importer', () => {
   it('should fail to import non-existing module', (done) => {
     getCSS(null, '@import "unicorn";').catch((err) => {
       const expected = {
-        message: 'File to import not found or unreadable: unicorn\nParent style sheet: stdin',
+        message: 'File to import not found or unreadable: unicorn.',
       };
       expect(err.message).to.exist.and.equal(expected.message);
       done();
@@ -97,6 +98,14 @@ describe('sass-module-importer', () => {
     it('should import a partial from a npm module', (done) => {
       getCSS(null, '@import "test-normalize/normalize/_body.scss";').then((css) => {
         const expected = 'html,body{margin:0;padding:0}\n';
+        expect(css).to.exist.and.equal(expected);
+        done();
+      });
+    });
+
+    it('should import SCSS from npm module with a transitive dependency', (done) => {
+      getCSS(null, '@import "test-npm-transitive";').then((css) => {
+        const expected = `.test{content:"SCSS from \'test-npm-transitive-inner\' package."}.test{content:"SCSS from \'test-npm-transitive\' package."}\n`;
         expect(css).to.exist.and.equal(expected);
         done();
       });
